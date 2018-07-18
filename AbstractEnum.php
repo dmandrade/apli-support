@@ -31,11 +31,13 @@ abstract class AbstractEnum implements \JsonSerializable
      * @var array
      */
     protected static $cache = array();
+
     /**
      * Set name of default constant key
      * @var string
      */
     protected static $defaultKey = "__default";
+
     /**
      * Enum value
      *
