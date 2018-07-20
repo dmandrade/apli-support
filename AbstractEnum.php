@@ -1,13 +1,15 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade (http://daniloandrade.net)
+ *  Copyright (c) 2018 Danilo Andrade (http://daniloandrade.net).
  *
  *  This file is part of the Aplí Framework.
  *
  * @project Aplí Framework
  * @file Environment.php
+ *
  * @author Danilo Andrade <danilo@daniloandrade.net>
  * @date 07/07/18 at 17:10
+ *
  * @copyright  Copyright (c) 2018 Danilo Andrade
  * @license    GNU Lesser General Public License version 3 or later.
  */
@@ -18,38 +20,36 @@ use ReflectionException;
 use UnexpectedValueException;
 
 /**
- * Enum implementation inspired from SplEnum
- *
- * @package Apli\Support
+ * Enum implementation inspired from SplEnum.
  */
 abstract class AbstractEnum implements \JsonSerializable
 {
-
     /**
      * Store existing constants in a static cache per object.
      *
      * @var array
      */
-    protected static $cache = array();
+    protected static $cache = [];
 
     /**
-     * Set name of default constant key
+     * Set name of default constant key.
+     *
      * @var string
      */
-    protected static $defaultKey = "__default";
+    protected static $defaultKey = '__default';
 
     /**
-     * Enum value
+     * Enum value.
      *
      * @var mixed
      */
     protected $value;
 
     /**
-     * Creates a new value of some type
+     * Creates a new value of some type.
      *
-     * @param mixed|null $value Initial value
-     * @param bool $strict Provided for SplEnum compatibility (its purpose is unknown)
+     * @param mixed|null $value  Initial value
+     * @param bool       $strict Provided for SplEnum compatibility (its purpose is unknown)
      *
      * @throws UnexpectedValueException if incompatible type is given.
      * @throws ReflectionException
@@ -74,12 +74,14 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Check if enum key exists
+     * Check if enum key exists.
      *
-     * @param string $name Name of the constant to validate
-     * @param bool $strict Case is significant when searching for name
-     * @return bool
+     * @param string $name   Name of the constant to validate
+     * @param bool   $strict Case is significant when searching for name
+     *
      * @throws ReflectionException
+     *
+     * @return bool
      */
     public static function isValidName($name, $strict = true)
     {
@@ -90,15 +92,18 @@ abstract class AbstractEnum implements \JsonSerializable
         }
 
         $constantNames = array_map('strtoupper', array_keys($constants));
+
         return in_array(strtoupper($name), $constantNames);
     }
 
     /**
-     * Returns all enum constants
+     * Returns all enum constants.
      *
      * @param bool $includeDefault
-     * @return array|mixed
+     *
      * @throws ReflectionException
+     *
+     * @return array|mixed
      */
     public static function getConstants($includeDefault = true)
     {
@@ -123,11 +128,13 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Check if is valid enum value
+     * Check if is valid enum value.
      *
      * @param $value
-     * @return bool
+     *
      * @throws ReflectionException
+     *
+     * @return bool
      */
     public static function isValidValue($value)
     {
@@ -135,10 +142,11 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Returns all possible values as an array, except default constant
+     * Returns all possible values as an array, except default constant.
+     *
+     * @throws ReflectionException
      *
      * @return mixed
-     * @throws ReflectionException
      */
     public static function toArray()
     {
@@ -146,10 +154,11 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Returns the names (keys) of all constants in the Enum class
+     * Returns the names (keys) of all constants in the Enum class.
+     *
+     * @throws ReflectionException
      *
      * @return array
-     * @throws ReflectionException
      */
     public static function keys()
     {
@@ -157,27 +166,32 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Returns instances of the Enum class of all Enum constants
+     * Returns instances of the Enum class of all Enum constants.
+     *
+     * @throws ReflectionException
      *
      * @return array
-     * @throws ReflectionException
      */
     public static function values()
     {
-        $values = array();
+        $values = [];
         foreach (static::toArray() as $key => $value) {
             $values[$key] = new static($value);
         }
+
         return $values;
     }
 
     /**
-     * Provided for compatibility with SplEnum
+     * Provided for compatibility with SplEnum.
      *
      * @see AbstractEnum::getConstants()
+     *
      * @param bool $include_default Include `__default` and its value. Not included by default.
-     * @return array
+     *
      * @throws ReflectionException
+     *
+     * @return array
      */
     public static function getConstList($include_default = false)
     {
@@ -185,13 +199,15 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant
+     * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant.
      *
      * @param $name
      * @param $arguments
-     * @return AbstractEnum
+     *
      * @throws ReflectionException
      * @throws \BadMethodCallException if enum does not exist
+     *
+     * @return AbstractEnum
      */
     public static function __callStatic($name, $arguments)
     {
@@ -199,14 +215,16 @@ abstract class AbstractEnum implements \JsonSerializable
         if (isset($array[$name])) {
             return new static($array[$name]);
         }
+
         throw new \BadMethodCallException("No static method or enum constant '$name' in class ".get_called_class());
     }
 
     /**
      * Returns the enum key.
      *
-     * @return mixed
      * @throws ReflectionException
+     *
+     * @return mixed
      */
     public function getKey()
     {
@@ -214,11 +232,13 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Return key for value
+     * Return key for value.
      *
      * @param $value
-     * @return false|int|string
+     *
      * @throws ReflectionException
+     *
+     * @return false|int|string
      */
     public static function search($value)
     {
@@ -226,7 +246,7 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
-     * Return string representation of the enum's value
+     * Return string representation of the enum's value.
      *
      * @return string
      */
@@ -239,15 +259,16 @@ abstract class AbstractEnum implements \JsonSerializable
      * Compares one Enum with another.
      *
      * @param AbstractEnum|null $enum
+     *
      * @return bool
      */
-    final public function equals(AbstractEnum $enum = null)
+    final public function equals(self $enum = null)
     {
         return $enum !== null && $this->getValue() === $enum->getValue() && get_called_class() == get_class($enum);
     }
 
     /**
-     * Get enum value
+     * Get enum value.
      *
      * @return mixed
      */

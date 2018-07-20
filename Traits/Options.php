@@ -3,23 +3,23 @@
 namespace Apli\Support\Traits;
 
 /**
- * Trait Options
- * @package Apli\Support\Traits
+ * Trait Options.
  */
 trait Options
 {
     /**
      * Property options.
      *
-     * @var  array
+     * @var array
      */
     protected $options = [];
 
     /**
-     * Method to get property Options
+     * Method to get property Options.
      *
      * @param $name
      * @param null $default
+     *
      * @return null
      */
     public function getOption($name, $default = null)
@@ -32,10 +32,11 @@ trait Options
     }
 
     /**
-     * Method to set property options
+     * Method to set property options.
      *
      * @param $name
      * @param $value
+     *
      * @return $this
      */
     public function setOption($name, $value)
@@ -46,7 +47,7 @@ trait Options
     }
 
     /**
-     * Method to get property Options
+     * Method to get property Options.
      *
      * @return array
      */
@@ -56,9 +57,10 @@ trait Options
     }
 
     /**
-     * Method to set property options
+     * Method to set property options.
      *
      * @param $options
+     *
      * @return $this
      */
     public function setOptions($options)

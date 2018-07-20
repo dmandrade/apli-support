@@ -3,13 +3,13 @@
 namespace Apli\Support\Traits;
 
 /**
- * Trait Immutable
- * @package Apli\Support\Traits
+ * Trait Immutable.
  */
 trait Immutable
 {
     /**
      * @param callable|null $callback
+     *
      * @return Immutable
      */
     protected function cloneInstance(callable $callback = null)
