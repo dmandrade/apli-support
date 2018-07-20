@@ -25,7 +25,7 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
      * Class init.
      *
      * @param array|\SplPriorityQueue $array
-     * @param int                     $priority
+     * @param int $priority
      */
     public function __construct($array = [], $priority = self::NORMAL)
     {
@@ -37,10 +37,58 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
     }
 
     /**
+     * merge
+     *
+     * @return static;
+     */
+    public function merge()
+    {
+        $args = func_get_args();
+
+        foreach ($args as $arg) {
+            if (!($arg instanceof \SplPriorityQueue)) {
+                throw new \InvalidArgumentException('Only \SplPriorityQueue can merge.');
+            }
+
+            $queue = clone $arg;
+
+            $queue->setExtractFlags(self::EXTR_BOTH);
+
+            foreach ($queue as $item) {
+                $this->insert($item['data'], $item['priority']);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Insert a value with a given priority
+     *
+     * Utilizes {@var $serial} to ensure that values of equal priority are
+     * emitted in the same order in which they are inserted.
+     *
+     * @param  mixed $value
+     * @param  mixed $priority
+     *
+     * @return void
+     */
+    public function insert($value, $priority)
+    {
+        if (!is_array($priority)) {
+            $priority = [$priority, $this->serial--];
+        } else {
+            $priority[] = $this->serial--;
+        }
+
+        parent::insert($value, $priority);
+    }
+
+    /**
      * bind
      *
      * @param array $array
-     * @param int   $priority
+     * @param int $priority
      *
      * @return  static
      */
@@ -67,28 +115,6 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
         }
 
         return $this;
-    }
-
-    /**
-     * Insert a value with a given priority
-     *
-     * Utilizes {@var $serial} to ensure that values of equal priority are
-     * emitted in the same order in which they are inserted.
-     *
-     * @param  mixed $value
-     * @param  mixed $priority
-     *
-     * @return void
-     */
-    public function insert($value, $priority)
-    {
-        if (!is_array($priority)) {
-            $priority = [$priority, $this->serial--];
-        } else {
-            $priority[] = $this->serial--;
-        }
-
-        parent::insert($value, $priority);
     }
 
     /**
@@ -141,32 +167,6 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
         foreach (unserialize($data) as $item) {
             $this->insert($item['data'], $item['priority']);
         }
-    }
-
-    /**
-     * merge
-     *
-     * @return static;
-     */
-    public function merge()
-    {
-        $args = func_get_args();
-
-        foreach ($args as $arg) {
-            if (!($arg instanceof \SplPriorityQueue)) {
-                throw new \InvalidArgumentException('Only \SplPriorityQueue can merge.');
-            }
-
-            $queue = clone $arg;
-
-            $queue->setExtractFlags(self::EXTR_BOTH);
-
-            foreach ($queue as $item) {
-                $this->insert($item['data'], $item['priority']);
-            }
-        }
-
-        return $this;
     }
 
     /**

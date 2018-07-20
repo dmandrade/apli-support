@@ -60,14 +60,14 @@ abstract class AbstractEnum implements \JsonSerializable
 
         if (is_null($value)) {
             if (!self::isValidName(self::$defaultKey)) {
-                throw new UnexpectedValueException('Default value not defined in enum ' . $className);
+                throw new UnexpectedValueException('Default value not defined in enum '.$className);
             }
 
             $value = self::getConstants()[self::$defaultKey];
         }
 
         if (!self::isValidValue($value)) {
-            throw new UnexpectedValueException("Value '$value' is not part of the enum " . get_called_class());
+            throw new UnexpectedValueException("Value '$value' is not part of the enum ".get_called_class());
         }
 
         $this->value = $value;
@@ -199,7 +199,7 @@ abstract class AbstractEnum implements \JsonSerializable
         if (isset($array[$name])) {
             return new static($array[$name]);
         }
-        throw new \BadMethodCallException("No static method or enum constant '$name' in class " . get_called_class());
+        throw new \BadMethodCallException("No static method or enum constant '$name' in class ".get_called_class());
     }
 
     /**
