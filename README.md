@@ -1,6 +1,6 @@
-# Apli Support
+# Aplí Support
        
-Apli Support package provides some core useful tool set.
+Aplí Support package provides some core useful tool set.
 
 ## Installation via Composer
 
