@@ -1,7 +1,8 @@
 # Development system files #
 .*
-!/.gitignore
-!/.editorconfig
+!.gitignre
+!.editorconfig
+!.styleci.yml
 !/.travis.yml
 
 # Composer #
