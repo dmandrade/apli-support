@@ -68,75 +68,6 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
-     * Check if enum key exists.
-     *
-     * @param string $name   Name of the constant to validate
-     * @param bool   $strict Case is significant when searching for name
-     *
-     * @throws ReflectionException
-     *
-     * @return bool
-     */
-    public static function isValidName($name, $strict = true)
-    {
-        $constants = static::getConstants();
-
-        if ($strict) {
-            return array_key_exists($name, $constants);
-        }
-
-        $constantNames = array_map('strtoupper', array_keys($constants));
-
-        return in_array(strtoupper($name), $constantNames);
-    }
-
-    /**
-     * Returns all enum constants.
-     *
-     * @param bool $includeDefault
-     *
-     * @throws ReflectionException
-     *
-     * @return array|mixed
-     */
-    public static function getConstants($includeDefault = true)
-    {
-        $className = get_called_class();
-        if (!array_key_exists($className, static::$cache)) {
-            $reflection = new \ReflectionClass($className);
-            static::$cache[$className] = $reflection->getConstants();
-        }
-
-        $constants = self::$cache[$className];
-
-        if ($includeDefault === false) {
-            $constants = array_filter(
-                $constants,
-                function ($key) {
-                    return $key !== self::$defaultKey;
-                },
-                ARRAY_FILTER_USE_KEY);
-        }
-
-        return $constants;
-    }
-
-    /**
-     * Check if is valid enum value.
-     *
-     * @param $value
-     * @param bool   $strict Case is significant when searching for name
-     *
-     * @throws ReflectionException
-     *
-     * @return bool
-     */
-    public static function isValidValue($value, $strict = true)
-    {
-        return in_array($value, static::toArray(), $strict);
-    }
-
-    /**
      * Returns all possible values as an array, except default constant.
      *
      * @throws ReflectionException
@@ -145,7 +76,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      */
     public static function toArray()
     {
-        return self::getConstants(false);
+        return self::getConstList(false);
     }
 
     /**
@@ -178,9 +109,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
-     * Provided for compatibility with SplEnum.
-     *
-     * @see AbstractEnum::getConstants()
+     * Get a list of constants
      *
      * @param bool $include_default Include `__default` and its value. Not included by default.
      *
@@ -190,7 +119,24 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      */
     public static function getConstList($include_default = false)
     {
-        return self::getConstants($include_default);
+        $className = get_called_class();
+        if (!array_key_exists($className, static::$cache)) {
+            $reflection = new \ReflectionClass($className);
+            static::$cache[$className] = $reflection->getConstants();
+        }
+
+        $constants = self::$cache[$className];
+
+        if ($include_default === false) {
+            $constants = array_filter(
+                $constants,
+                function ($key) {
+                    return $key !== self::$defaultKey;
+                },
+                ARRAY_FILTER_USE_KEY);
+        }
+
+        return $constants;
     }
 
     /**
@@ -281,17 +227,18 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     public function setValue($value)
     {
         $className = get_called_class();
+        $constants = static::getConstList();
 
         if (is_null($value)) {
-            if (!self::isValidName(self::$defaultKey)) {
+            if (!isset($constants[self::$defaultKey])) {
                 throw new UnexpectedValueException('Default value not defined in enum '.$className);
             }
 
-            $value = self::getConstants()[self::$defaultKey];
+            $value = $constants[self::$defaultKey];
         }
 
-        if (!self::isValidValue($value, $this->_strict)) {
-            throw new UnexpectedValueException("Value '$value' is not part of the enum ".get_called_class());
+        if (!in_array($value, $constants, $this->_strict)) {
+            throw new UnexpectedValueException("Value '$value' is not part of the enum ".$className);
         }
 
         $this->value = $value;
