@@ -75,11 +75,11 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
      */
     public function insert($value, $priority)
     {
-        if (!is_array($priority)) {
-            $priority = [$priority, $this->serial--];
-        } else {
-            $priority[] = $this->serial--;
+        if(!is_array($priority)){
+            $priority = [$priority];
         }
+
+        $priority[] = $this->serial--;
 
         parent::insert($value, $priority);
     }
@@ -191,9 +191,9 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
                 continue;
             } elseif ($priority1[$k] > $priority2[$k]) {
                 return 1;
-            } else {
-                return -1;
             }
+
+            return -1;
         }
 
         return 0;
