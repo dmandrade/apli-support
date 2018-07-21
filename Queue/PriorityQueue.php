@@ -30,9 +30,10 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
     {
         if ($array instanceof \SplPriorityQueue) {
             $this->merge($array);
-        } else {
-            $this->bind($array, $priority);
+            return;
         }
+
+        $this->bind($array, $priority);
     }
 
     /**

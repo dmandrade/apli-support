@@ -22,7 +22,7 @@ use UnexpectedValueException;
 /**
  * Enum implementation inspired from SplEnum.
  */
-abstract class AbstractEnum implements \JsonSerializable
+abstract class AbstractEnum implements \JsonSerializable, \Serializable
 {
     /**
      * Store existing constants in a static cache per object.
@@ -39,6 +39,13 @@ abstract class AbstractEnum implements \JsonSerializable
     protected static $defaultKey = '__default';
 
     /**
+     * Set if is strict
+     *
+     * @var bool
+     */
+    protected $_strict;
+
+    /**
      * Enum value.
      *
      * @var mixed
@@ -49,28 +56,15 @@ abstract class AbstractEnum implements \JsonSerializable
      * Creates a new value of some type.
      *
      * @param mixed|null $value  Initial value
-     * @param bool       $strict Provided for SplEnum compatibility (its purpose is unknown)
+     * @param bool       $strict Provided for SplEnum compatibility
      *
      * @throws UnexpectedValueException if incompatible type is given.
      * @throws ReflectionException
      */
     public function __construct($value = null, $strict = false)
     {
-        $className = get_called_class();
-
-        if (is_null($value)) {
-            if (!self::isValidName(self::$defaultKey)) {
-                throw new UnexpectedValueException('Default value not defined in enum '.$className);
-            }
-
-            $value = self::getConstants()[self::$defaultKey];
-        }
-
-        if (!self::isValidValue($value)) {
-            throw new UnexpectedValueException("Value '$value' is not part of the enum ".get_called_class());
-        }
-
-        $this->value = $value;
+        $this->_strict = (bool) $strict;
+        $this->setValue($value);
     }
 
     /**
@@ -131,14 +125,15 @@ abstract class AbstractEnum implements \JsonSerializable
      * Check if is valid enum value.
      *
      * @param $value
+     * @param bool   $strict Case is significant when searching for name
      *
      * @throws ReflectionException
      *
      * @return bool
      */
-    public static function isValidValue($value)
+    public static function isValidValue($value, $strict = true)
     {
-        return in_array($value, static::toArray(), true);
+        return in_array($value, static::toArray(), $strict);
     }
 
     /**
@@ -278,6 +273,31 @@ abstract class AbstractEnum implements \JsonSerializable
     }
 
     /**
+     * Set enum value
+     *
+     * @param $value
+     * @throws ReflectionException
+     */
+    public function setValue($value)
+    {
+        $className = get_called_class();
+
+        if (is_null($value)) {
+            if (!self::isValidName(self::$defaultKey)) {
+                throw new UnexpectedValueException('Default value not defined in enum '.$className);
+            }
+
+            $value = self::getConstants()[self::$defaultKey];
+        }
+
+        if (!self::isValidValue($value, $this->_strict)) {
+            throw new UnexpectedValueException("Value '$value' is not part of the enum ".get_called_class());
+        }
+
+        $this->value = $value;
+    }
+
+    /**
      * Specify data which should be serialized to JSON. This method returns data that can be serialized by json_encode()
      * natively.
      *
@@ -286,5 +306,15 @@ abstract class AbstractEnum implements \JsonSerializable
     public function jsonSerialize()
     {
         return $this->getValue();
+    }
+
+    public function serialize()
+    {
+        return serialize(array('__default' => $this->value));
+    }
+    public function unserialize($serialized)
+    {
+        $this->value = unserialize($serialized)['__default'];
+        $this->_strict = false;
     }
 }
