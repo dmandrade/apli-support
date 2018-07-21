@@ -39,7 +39,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     protected static $defaultKey = '__default';
 
     /**
-     * Set if is strict
+     * Set if is strict.
      *
      * @var bool
      */
@@ -125,7 +125,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      * Check if is valid enum value.
      *
      * @param $value
-     * @param bool   $strict Case is significant when searching for name
+     * @param bool $strict Case is significant when searching for name
      *
      * @throws ReflectionException
      *
@@ -273,9 +273,10 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
-     * Set enum value
+     * Set enum value.
      *
      * @param $value
+     *
      * @throws ReflectionException
      */
     public function setValue($value)
@@ -310,8 +311,9 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
 
     public function serialize()
     {
-        return serialize(array('__default' => $this->value));
+        return serialize(['__default' => $this->value]);
     }
+
     public function unserialize($serialized)
     {
         $this->value = unserialize($serialized)['__default'];

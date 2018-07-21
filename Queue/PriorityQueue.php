@@ -30,6 +30,7 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
     {
         if ($array instanceof \SplPriorityQueue) {
             $this->merge($array);
+
             return;
         }
 
@@ -75,7 +76,7 @@ class PriorityQueue extends \SplPriorityQueue implements \Serializable
      */
     public function insert($value, $priority)
     {
-        if(!is_array($priority)){
+        if (!is_array($priority)) {
             $priority = [$priority];
         }
 
