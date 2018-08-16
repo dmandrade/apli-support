@@ -17,7 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Apli\\Support\\": "src"
+      "Apli\\Support\\": ""
     }
   },
   "extra": {
