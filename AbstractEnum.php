@@ -251,6 +251,66 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
+     * @param       $name
+     * @param array $arguments
+     * @return bool
+     * @throws ReflectionException
+     */
+    public function __call($name, array $arguments)
+    {
+        if (strpos($name, 'is') === 0 && strlen($name) > 2 && ctype_upper($name[2])) {
+            $constName = self::strToConstName(substr($name, 2));
+            if (self::hasConst($constName)) {
+                return $this->equalsByConstName($constName);
+            }
+        }
+        trigger_error(
+            sprintf('Call to undefined method: %s::%s()', static::class, $name),
+            E_USER_WARNING
+        );
+    }
+
+    /**
+     * Returns whether a const is present in the specific enum class.
+     *
+     * @param $const
+     * @return bool
+     * @throws ReflectionException
+     */
+    public static function hasConst($const)
+    {
+        return in_array($const, static::keys());
+    }
+
+    /**
+     * Returns whether the enum instance equals with a value of the same
+     * type created from the given const name
+     *
+     * @param $const
+     * @return bool
+     * @throws ReflectionException
+     */
+    private function equalsByConstName($const)
+    {
+        return $this->equals(
+            new static(constant(static::class . '::' . $const))
+        );
+    }
+
+    /**
+     * @param $str
+     * @return string
+     */
+    private static function strToConstName($str)
+    {
+        if (! ctype_lower($str)) {
+            $str = preg_replace('/\s+/u', '', ucwords($str));
+            $str = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . '_', $str));
+        }
+        return strtoupper($str);
+    }
+
+    /**
      * Compares one Enum with another.
      *
      * @param AbstractEnum|null $enum
