@@ -24,6 +24,14 @@ use UnexpectedValueException;
  */
 abstract class AbstractEnum implements \JsonSerializable, \Serializable
 {
+
+    /**
+     * List of labels for enums constants
+     *
+     * @var array
+     */
+    public static $labels = [];
+
     /**
      * Store existing constants in a static cache per object.
      *
@@ -68,6 +76,63 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
+     * Returns the label for a given value.
+     *
+     * !!Make sure it only gets called after bootClass()!!
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    private static function getLabel($value)
+    {
+        if (static::hasLabels() && isset(static::$labels[$value])) {
+            return (string) static::$labels[$value];
+        }
+        return (string) $value;
+    }
+
+    /**
+     * Returns whether the labels property is defined on the actual class.
+     *
+     * @return bool
+     */
+    private static function hasLabels()
+    {
+        return property_exists(static::class, 'labels');
+    }
+
+    /**
+     * Return the array of labels
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    public static function labels()
+    {
+        $result = [];
+        foreach (static::values() as $value) {
+            $result[] = static::getLabel($value);
+        }
+        return $result;
+    }
+
+    /**
+     * Return a array with value/label pairs.
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    public static function choices()
+    {
+        $result = [];
+        foreach (static::values() as $value) {
+            $result[$value] = static::getLabel($value);
+        }
+        return $result;
+    }
+
+    /**
      * Check if enum key exists.
      *
      * @param string $name   Name of the constant to validate
@@ -105,6 +170,10 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
         if (!array_key_exists($className, static::$cache)) {
             $reflection = new \ReflectionClass($className);
             static::$cache[$className] = $reflection->getConstants();
+
+            if (method_exists($className, 'boot')) {
+                static::boot();
+            }
         }
 
         $constants = self::$cache[$className];
