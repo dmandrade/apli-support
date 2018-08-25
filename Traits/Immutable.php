@@ -1,4 +1,14 @@
 <?php
+/**
+ *  Copyright (c) 2018 Danilo Andrade
+ *
+ *  This file is part of the apli project.
+ *
+ *  @project apli
+ *  @file Immutable.php
+ *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ *  @date 27/07/18 at 10:11
+ */
 
 namespace Apli\Support\Traits;
 
