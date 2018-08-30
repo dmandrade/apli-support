@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Options.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 27/07/18 at 10:11
+ *  @date 27/08/18 at 10:27
  */
 
 namespace Apli\Support\Traits;
@@ -27,7 +27,7 @@ trait Options
     /**
      * Method to get property Options.
      *
-     * @param $name
+     * @param      $name
      * @param null $default
      *
      * @return null

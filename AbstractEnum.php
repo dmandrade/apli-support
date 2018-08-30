@@ -7,7 +7,7 @@
  *  @project apli
  *  @file AbstractEnum.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 23/08/18 at 18:27
+ *  @date 27/08/18 at 10:26
  */
 
 namespace Apli\Support;
@@ -59,7 +59,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     /**
      * Creates a new value of some type.
      *
-     * @param mixed|null $value  Initial value
+     * @param mixed|null $value Initial value
      * @param bool       $strict Provided for SplEnum compatibility
      *
      * @throws UnexpectedValueException if incompatible type is given.
@@ -67,35 +67,8 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      */
     public function __construct($value = null, $strict = false)
     {
-        $this->_strict = (bool) $strict;
+        $this->_strict = (bool)$strict;
         $this->setValue($value);
-    }
-
-    /**
-     * Returns the label for a given value.
-     *
-     * !!Make sure it only gets called after bootClass()!!
-     *
-     * @param $value
-     *
-     * @return string
-     */
-    private static function getLabel($value)
-    {
-        if (static::hasLabels() && isset(static::$labels[$value])) {
-            return (string) static::$labels[$value];
-        }
-        return (string) $value;
-    }
-
-    /**
-     * Returns whether the labels property is defined on the actual class.
-     *
-     * @return bool
-     */
-    private static function hasLabels()
-    {
-        return property_exists(static::class, 'labels');
     }
 
     /**
@@ -114,41 +87,32 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
-     * Return a array with value/label pairs.
+     * Returns instances of the Enum class of all Enum constants.
+     *
+     * @throws ReflectionException
      *
      * @return array
-     * @throws ReflectionException
      */
-    public static function choices()
+    public static function values()
     {
-        $result = [];
-        foreach (static::values() as $value) {
-            $result[$value] = static::getLabel($value);
+        $values = [];
+        foreach (static::toArray() as $key => $value) {
+            $values[$key] = new static($value);
         }
-        return $result;
+
+        return $values;
     }
 
     /**
-     * Check if enum key exists.
-     *
-     * @param string $name   Name of the constant to validate
-     * @param bool   $strict Case is significant when searching for name
+     * Returns all possible values as an array, except default constant.
      *
      * @throws ReflectionException
      *
-     * @return bool
+     * @return mixed
      */
-    public static function isValidName($name, $strict = true)
+    public static function toArray()
     {
-        $constants = static::getConstants();
-
-        if ($strict) {
-            return array_key_exists($name, $constants);
-        }
-
-        $constantNames = array_map('strtoupper', array_keys($constants));
-
-        return in_array(strtoupper($name), $constantNames);
+        return self::getConstants(false);
     }
 
     /**
@@ -187,9 +151,74 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
-     * Check if is valid enum value.
+     * Returns the label for a given value.
+     *
+     * !!Make sure it only gets called after bootClass()!!
      *
      * @param $value
+     *
+     * @return string
+     */
+    private static function getLabel($value)
+    {
+        if (static::hasLabels() && isset(static::$labels[$value])) {
+            return (string)static::$labels[$value];
+        }
+        return (string)$value;
+    }
+
+    /**
+     * Returns whether the labels property is defined on the actual class.
+     *
+     * @return bool
+     */
+    private static function hasLabels()
+    {
+        return property_exists(static::class, 'labels');
+    }
+
+    /**
+     * Return a array with value/label pairs.
+     *
+     * @return array
+     * @throws ReflectionException
+     */
+    public static function choices()
+    {
+        $result = [];
+        foreach (static::values() as $value) {
+            $result[$value] = static::getLabel($value);
+        }
+        return $result;
+    }
+
+    /**
+     * Check if enum key exists.
+     *
+     * @param string $name Name of the constant to validate
+     * @param bool   $strict Case is significant when searching for name
+     *
+     * @throws ReflectionException
+     *
+     * @return bool
+     */
+    public static function isValidName($name, $strict = true)
+    {
+        $constants = static::getConstants();
+
+        if ($strict) {
+            return array_key_exists($name, $constants);
+        }
+
+        $constantNames = array_map('strtoupper', array_keys($constants));
+
+        return in_array(strtoupper($name), $constantNames);
+    }
+
+    /**
+     * Check if is valid enum value.
+     *
+     * @param      $value
      * @param bool $strict Case is significant when searching for name
      *
      * @throws ReflectionException
@@ -199,47 +228,6 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     public static function isValidValue($value, $strict = true)
     {
         return in_array($value, static::toArray(), $strict);
-    }
-
-    /**
-     * Returns all possible values as an array, except default constant.
-     *
-     * @throws ReflectionException
-     *
-     * @return mixed
-     */
-    public static function toArray()
-    {
-        return self::getConstants(false);
-    }
-
-    /**
-     * Returns the names (keys) of all constants in the Enum class.
-     *
-     * @throws ReflectionException
-     *
-     * @return array
-     */
-    public static function keys()
-    {
-        return array_keys(static::toArray());
-    }
-
-    /**
-     * Returns instances of the Enum class of all Enum constants.
-     *
-     * @throws ReflectionException
-     *
-     * @return array
-     */
-    public static function values()
-    {
-        $values = [];
-        foreach (static::toArray() as $key => $value) {
-            $values[$key] = new static($value);
-        }
-
-        return $values;
     }
 
     /**
@@ -336,6 +324,19 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     }
 
     /**
+     * @param $str
+     * @return string
+     */
+    private static function strToConstName($str)
+    {
+        if (!ctype_lower($str)) {
+            $str = preg_replace('/\s+/u', '', ucwords($str));
+            $str = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1'.'_', $str));
+        }
+        return strtoupper($str);
+    }
+
+    /**
      * Returns whether a const is present in the specific enum class.
      *
      * @param $const
@@ -345,6 +346,18 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     public static function hasConst($const)
     {
         return in_array($const, static::keys());
+    }
+
+    /**
+     * Returns the names (keys) of all constants in the Enum class.
+     *
+     * @throws ReflectionException
+     *
+     * @return array
+     */
+    public static function keys()
+    {
+        return array_keys(static::toArray());
     }
 
     /**
@@ -358,21 +371,8 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     private function equalsByConstName($const)
     {
         return $this->equals(
-            new static(constant(static::class . '::' . $const))
+            new static(constant(static::class.'::'.$const))
         );
-    }
-
-    /**
-     * @param $str
-     * @return string
-     */
-    private static function strToConstName($str)
-    {
-        if (! ctype_lower($str)) {
-            $str = preg_replace('/\s+/u', '', ucwords($str));
-            $str = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1' . '_', $str));
-        }
-        return strtoupper($str);
     }
 
     /**

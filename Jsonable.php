@@ -7,7 +7,7 @@
  *  @project apli
  *  @file Jsonable.php
  *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 18/08/18 at 16:47
+ *  @date 27/08/18 at 10:27
  */
 
 /**
@@ -28,7 +28,7 @@ interface Jsonable
     /**
      * Convert the object to its JSON representation.
      *
-     * @param  int  $options
+     * @param  int $options
      * @return string
      */
     public function toJson($options = 0);
