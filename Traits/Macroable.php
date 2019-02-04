@@ -4,10 +4,10 @@
  *
  *  This file is part of the apli project.
  *
- *  @project apli
- *  @file Macroable.php
- *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 05/09/18 at 11:20
+ * @project apli
+ * @file Macroable.php
+ * @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ * @date 05/09/18 at 11:20
  */
 
 /**
@@ -19,10 +19,10 @@
 
 namespace Apli\Support\Traits;
 
+use BadMethodCallException;
 use Closure;
 use ReflectionClass;
 use ReflectionMethod;
-use BadMethodCallException;
 
 trait Macroable
 {
@@ -35,22 +35,9 @@ trait Macroable
     protected static $macros = [];
 
     /**
-     * Register a custom macro.
-     *
-     * @param  string $name
-     * @param  object|callable  $macro
-     *
-     * @return void
-     */
-    public static function macro($name, $macro)
-    {
-        static::$macros[$name] = $macro;
-    }
-
-    /**
      * Mix another object into the class.
      *
-     * @param  object  $mixin
+     * @param  object $mixin
      * @return void
      * @throws \ReflectionException
      */
@@ -68,28 +55,30 @@ trait Macroable
     }
 
     /**
-     * Checks if macro is registered.
+     * Register a custom macro.
      *
-     * @param  string  $name
-     * @return bool
+     * @param  string          $name
+     * @param  object|callable $macro
+     *
+     * @return void
      */
-    public static function hasMacro($name)
+    public static function macro($name, $macro)
     {
-        return isset(static::$macros[$name]);
+        static::$macros[$name] = $macro;
     }
 
     /**
      * Dynamically handle calls to the class.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param  string $method
+     * @param  array  $parameters
      * @return mixed
      *
      * @throws \BadMethodCallException
      */
     public static function __callStatic($method, $parameters)
     {
-        if (! static::hasMacro($method)) {
+        if (!static::hasMacro($method)) {
             throw new BadMethodCallException(sprintf(
                 'Method %s::%s does not exist.', static::class, $method
             ));
@@ -103,17 +92,28 @@ trait Macroable
     }
 
     /**
+     * Checks if macro is registered.
+     *
+     * @param  string $name
+     * @return bool
+     */
+    public static function hasMacro($name)
+    {
+        return isset(static::$macros[$name]);
+    }
+
+    /**
      * Dynamically handle calls to the class.
      *
-     * @param  string  $method
-     * @param  array   $parameters
+     * @param  string $method
+     * @param  array  $parameters
      * @return mixed
      *
      * @throws \BadMethodCallException
      */
     public function __call($method, $parameters)
     {
-        if (! static::hasMacro($method)) {
+        if (!static::hasMacro($method)) {
             throw new BadMethodCallException(sprintf(
                 'Method %s::%s does not exist.', static::class, $method
             ));
