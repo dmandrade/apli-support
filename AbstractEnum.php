@@ -1,11 +1,12 @@
 <?php
 /**
- *  Copyright (c) 2018 Danilo Andrade
+ *  Copyright (c) 2018 Danilo Andrade.
  *
  *  This file is part of the apli project.
  *
  * @project apli
  * @file AbstractEnum.php
+ *
  * @author Danilo Andrade <danilo@webbingbrasil.com.br>
  * @date 27/08/18 at 10:26
  */
@@ -20,9 +21,8 @@ use UnexpectedValueException;
  */
 abstract class AbstractEnum implements \JsonSerializable, \Serializable
 {
-
     /**
-     * List of labels for enums constants
+     * List of labels for enums constants.
      *
      * @var array
      */
@@ -59,7 +59,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     /**
      * Creates a new value of some type.
      *
-     * @param mixed|null $value Initial value
+     * @param mixed|null $value  Initial value
      * @param bool       $strict Provided for SplEnum compatibility
      *
      * @throws UnexpectedValueException if incompatible type is given.
@@ -67,15 +67,16 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      */
     public function __construct($value = null, $strict = false)
     {
-        $this->_strict = (bool)$strict;
+        $this->_strict = (bool) $strict;
         $this->setValue($value);
     }
 
     /**
-     * Return the array of labels
+     * Return the array of labels.
+     *
+     * @throws ReflectionException
      *
      * @return array
-     * @throws ReflectionException
      */
     public static function labels()
     {
@@ -83,6 +84,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
         foreach (static::values() as $value) {
             $result[] = static::getLabel($value);
         }
+
         return $result;
     }
 
@@ -162,9 +164,10 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     private static function getLabel($value)
     {
         if (static::hasLabels() && isset(static::$labels[$value])) {
-            return (string)static::$labels[$value];
+            return (string) static::$labels[$value];
         }
-        return (string)$value;
+
+        return (string) $value;
     }
 
     /**
@@ -180,8 +183,9 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     /**
      * Return a array with value/label pairs.
      *
-     * @return array
      * @throws ReflectionException
+     *
+     * @return array
      */
     public static function choices()
     {
@@ -189,13 +193,14 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
         foreach (static::values() as $value) {
             $result[$value] = static::getLabel($value);
         }
+
         return $result;
     }
 
     /**
      * Check if enum key exists.
      *
-     * @param string $name Name of the constant to validate
+     * @param string $name   Name of the constant to validate
      * @param bool   $strict Case is significant when searching for name
      *
      * @throws ReflectionException
@@ -306,8 +311,10 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
     /**
      * @param       $name
      * @param array $arguments
-     * @return bool
+     *
      * @throws ReflectionException
+     *
+     * @return bool
      */
     public function __call($name, array $arguments)
     {
@@ -325,6 +332,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
 
     /**
      * @param $str
+     *
      * @return string
      */
     private static function strToConstName($str)
@@ -333,6 +341,7 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
             $str = preg_replace('/\s+/u', '', ucwords($str));
             $str = strtolower(preg_replace('/(.)(?=[A-Z])/u', '$1'.'_', $str));
         }
+
         return strtoupper($str);
     }
 
@@ -340,8 +349,10 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
      * Returns whether a const is present in the specific enum class.
      *
      * @param $const
-     * @return bool
+     *
      * @throws ReflectionException
+     *
+     * @return bool
      */
     public static function hasConst($const)
     {
@@ -362,11 +373,13 @@ abstract class AbstractEnum implements \JsonSerializable, \Serializable
 
     /**
      * Returns whether the enum instance equals with a value of the same
-     * type created from the given const name
+     * type created from the given const name.
      *
      * @param $const
-     * @return bool
+     *
      * @throws ReflectionException
+     *
+     * @return bool
      */
     private function equalsByConstName($const)
     {
