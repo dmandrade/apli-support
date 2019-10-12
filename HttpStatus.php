@@ -20,6 +20,6 @@
 
 namespace Apli\Support;
 
-class HttpStatus extends AbstractEnum
+class HttpStatus extends Enum
 {
 }
