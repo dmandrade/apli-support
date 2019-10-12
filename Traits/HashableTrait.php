@@ -34,17 +34,17 @@ trait HashableTrait
      *
      * @return bool
      */
-    public function equals(Hashable $other)
+    public function equals(Hashable $other): bool
     {
-        return $other instanceof $this && $other->hash() == $this->hash();
+        return $other instanceof $this && $other->hash() === $this->hash();
     }
 
     /**
      * Produces a scalar value to be used as the object's hash.
      *
-     * @return mixed
+     * @return string
      */
-    public function hash()
+    public function hash(): string
     {
         return md5(var_export($this, true), false);
     }

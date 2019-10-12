@@ -25,12 +25,12 @@ interface Hashable
      *
      * @return bool
      */
-    public function equals(self $other);
+    public function equals(Hashable $other): bool;
 
     /**
      * Produces a scalar value to be used as the object's hash.
      *
-     * @return mixed
+     * @return string
      */
-    public function hash();
+    public function hash(): string;
 }
