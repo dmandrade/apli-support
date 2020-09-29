@@ -4,10 +4,10 @@
  *
  *  This file is part of the apli project.
  *
- *  @project apli
- *  @file Str.php
- *  @author Danilo Andrade <danilo@webbingbrasil.com.br>
- *  @date 03/02/19 at 22:29
+ * @project apli
+ * @file Str.php
+ * @author Danilo Andrade <danilo@webbingbrasil.com.br>
+ * @date 03/02/19 at 22:29
  */
 
 /**
@@ -20,6 +20,13 @@
 namespace Apli\Support;
 
 use Apli\Support\Traits\Macroable;
+use mb_strtolower;
+use mb_strtoupper;
+use mb_convert_case;
+use ucwords;
+use str_replace;
+use ctype_lower;
+use preg_replace;
 
 class Str
 {
@@ -43,7 +50,7 @@ class Str
     /**
      * Convert a value to studly caps case.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
     public static function studly(string $value): string
@@ -62,8 +69,8 @@ class Str
     /**
      * Convert a string to snake case.
      *
-     * @param  string  $value
-     * @param  string  $delimiter
+     * @param string $value
+     * @param string $delimiter
      * @return string
      */
     public static function snake($value, $delimiter = '_'): string
@@ -74,10 +81,10 @@ class Str
             return static::$snakeCache[$key][$delimiter];
         }
 
-        if (! ctype_lower($value)) {
+        if (!ctype_lower($value)) {
             $value = preg_replace('/\s+/u', '', ucwords($value));
 
-            $value = static::lower(preg_replace('/(.)(?=[A-Z])/u', '$1'.$delimiter, $value));
+            $value = static::lower(preg_replace('/(.)(?=[A-Z])/u', '$1' . $delimiter, $value));
         }
 
         return static::$snakeCache[$key][$delimiter] = $value;
@@ -86,7 +93,7 @@ class Str
     /**
      * Convert the given string to lower-case.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
     public static function lower(string $value): string
@@ -97,7 +104,7 @@ class Str
     /**
      * Convert the given string to upper-case.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
     public static function upper(string $value): string
@@ -108,7 +115,7 @@ class Str
     /**
      * Convert the given string to title case.
      *
-     * @param  string  $value
+     * @param string $value
      * @return string
      */
     public static function title(string $value): string

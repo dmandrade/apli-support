@@ -24,6 +24,7 @@ use BadMethodCallException;
 use Closure;
 use ReflectionClass;
 use ReflectionMethod;
+use function call_user_func_array;
 
 trait Macroable
 {
@@ -43,7 +44,7 @@ trait Macroable
      *
      * @return void
      */
-    public static function mixin($mixin)
+    public static function mixin($mixin): void
     {
         $methods = (new ReflectionClass($mixin))->getMethods(
             ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED
@@ -64,7 +65,7 @@ trait Macroable
      *
      * @return void
      */
-    public static function macro($name, $macro)
+    public static function macro($name, $macro): void
     {
         static::$macros[$name] = $macro;
     }
@@ -101,7 +102,7 @@ trait Macroable
      *
      * @return bool
      */
-    public static function hasMacro($name)
+    public static function hasMacro($name): bool
     {
         return isset(static::$macros[$name]);
     }
